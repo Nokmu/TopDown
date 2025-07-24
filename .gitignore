@@ -23,9 +23,12 @@ Build/
 # --- IDE 관련 ---
 .vs/
 .vscode/
-.vsconfig       # ← Visual Studio 설치 구성 파일 무시
-*.sln           # 협업하지 않을 경우 무시
-*.xcconfig      # ← Xcode 설치 구성 파일 무시
+# ← Visual Studio 설치 구성 파일 무시
+.vsconfig
+# 협업하지 않을 경우 무시
+*.sln
+# ← Xcode 설치 구성 파일 무시
+*.xcconfig
 *.xcodeproj/
 *.xcworkspace
 *.xcuserdata
