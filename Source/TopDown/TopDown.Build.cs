@@ -19,7 +19,8 @@ public class TopDown : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"Niagara",
-			"UMG"
+			"UMG",
+            "GamePlayTasks"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
