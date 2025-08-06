@@ -1,11 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-//test
+
 #include "MyPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterAnim.h"
+#include "Enemy.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -73,8 +75,40 @@ void AMyPlayer::Attack()
 
 void AMyPlayer::OnAttackHit()
 {
-    UE_LOG(LogTemp, Log, TEXT("Hit"));
-    //캡슐 컬라이더 만들어서 사정거리 안에 있는지 체크 하고 데미지 주기
+    FHitResult HitResult;
+    FCollisionQueryParams Params(NAME_None, false, this);
+
+    float AttackRange = 100.f;
+    float AtttackRadius = 50.f;
+    float HalfHeight = AttackRange * 0.5f + AtttackRadius;
+
+    FVector Forward = GetActorForwardVector() * AttackRange;
+
+    bool Result = GetWorld()->SweepSingleByChannel(OUT HitResult,
+        GetActorLocation(),
+        GetActorLocation() + Forward,
+        FQuat::Identity,
+        ECollisionChannel::ECC_GameTraceChannel2,
+        FCollisionShape::MakeCapsule(AtttackRadius, HalfHeight),
+        Params);
+
+    FVector Center = GetActorLocation() + Forward * 0.5f;
+    FQuat Rotation = FRotationMatrix::MakeFromZ(Forward).ToQuat();
+
+    FColor DrawColor = Result ? FColor::Green : FColor::Red;
+
+    DrawDebugCapsule(GetWorld(), Center, HalfHeight, AtttackRadius, Rotation, DrawColor, false, 2.f);
+
+    if (Result && HitResult.GetActor())
+    {
+        auto Enemy = Cast<AEnemy>(HitResult.GetActor());
+        if (Enemy)
+        {
+            UGameplayStatics::ApplyDamage(Enemy, 10.f, GetController(), nullptr, NULL);
+        }
+
+    }
+
 }
                                                   
 void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
